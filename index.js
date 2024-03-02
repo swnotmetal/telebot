@@ -32,7 +32,15 @@ app.post("/new-message", function(req, res) {
 		responseText = "朕年轻落选厦门副市长的时候可帅了你们懂什么!"
 	} else if (text.includes("共匪") || text.includes("共匪")) {
 		responseText = "你怎么不去舔美国的屁股沟子，你们总统都老年痴呆了"
-	} else {
+	} else if (text.includes("汉地") || text.includes("汉地")) {
+		responseText = "装什么少民 七五就该把你们汉民图光了"
+    } else if (text.includes("小哥") || text.includes("小哥")) {
+		responseText = "小哥是个好同志 亲自颁发劳模奖章 就是再撒狗粮你大大的鸡巴也硬不起来"
+    } else if (text.includes("维尼") || text.includes("维尼")) {
+		responseText = "呜呜呜呜 鸡巴太小了 又是水筒形身材 还有癌症 哪里有安全感 全国韭菜一起陪葬吧"
+    } 
+	
+	else {
 		// If no specific keyword is matched, respond with a default message
 		responseText = "会不会说中文，呼叫吴京，这里有汉奸"
 	}
