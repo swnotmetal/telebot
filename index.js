@@ -44,8 +44,11 @@ app.post("/new-message", async function(req, res) {
 		responseText = "小哥是个好同志 亲自颁发劳模奖章 就是再撒狗粮你大大的鸡巴也硬不起来"
     } else if (text.includes("维尼") || text.includes("维尼")) {
 		responseText = "呜呜呜呜 鸡巴太小了 又是水筒形身材 还有癌症 哪里有安全感 全国韭菜一起陪葬吧"
-    } 
-	
+    } else if (text.includes("这卖") || text.includes("这卖")) {
+		responseText = "卖批！阿达西阿囊阿死给！"
+	} else if (text.includes("我蛤", "江泽民") || text.includes("我蛤", "江泽民")) {
+		responseText = "团派江派一扫光哟"
+	}
 	else {
 		return res.end()
 	}
