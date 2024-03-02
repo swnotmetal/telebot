@@ -18,7 +18,7 @@ app.use(
 const detectlanguage = new DetectLanguage({
     key: process.env.DETECT_LANGUAGE_API_KEY // Use the API key from environment variables
 })
-app.post("/new-message", function(req, res) {
+app.post("/new-message", async function(req, res) {
 	const { message } = req.body
 
 	//Each message contains "text" and a "chat" object, which has an "id" which is the chat id
