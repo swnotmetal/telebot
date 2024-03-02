@@ -3,27 +3,33 @@ var app = express()
 var bodyParser = require("body-parser")
 const axios = require("axios")
 require('dotenv').config()
+var DetectLanguage = require('detectlanguage')
+
+
+const languageThreshold = 2
+
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(
 	bodyParser.urlencoded({
 		extended: true,
 	})
-) // for parsing application/x-www-form-urlencoded
-
-//This is the route the API will call
+) 
+const detectlanguage = new DetectLanguage({
+    key: process.env.DETECT_LANGUAGE_API_KEY // Use the API key from environment variables
+})
 app.post("/new-message", function(req, res) {
 	const { message } = req.body
 
 	//Each message contains "text" and a "chat" object, which has an "id" which is the chat id
 
 	if (!message || !message.text) {
-		// In case a message is not present or doesn't have text, do nothing and return an empty response
 		return res.end()
 	}
 
 	// Process different types of messages based on keywords
 	const text = message.text.toLowerCase()
+	
 	let responseText = ''
 
 	if (text.includes("包子")|| text.includes("包子")) {
@@ -41,10 +47,29 @@ app.post("/new-message", function(req, res) {
     } 
 	
 	else {
-		// If no specific keyword is matched, respond with a default message
-		responseText = "会不会说中文，呼叫吴京，这里有汉奸"
+		return res.end()
+	}
+	const englishWordCount = message.text.split(/\s+/).filter(word => /[a-zA-Z]/.test(word)).length
+	let shouldDetectLanguage = englishWordCount > languageThreshold
+	let language = "zh"
+	if(shouldDetectLanguage) {
+		try {
+            const languageDetectionResult = await detectlanguage.detect(message.text);
+            language = languageDetectionResult && languageDetectionResult.length > 0 ? languageDetectionResult[0].language : 'en';
+        } catch (error) {
+            console.error("Error detecting language:", error);
+        }
 	}
 
+	if (language === "zh") {
+		const containsEnglishWords = message.text.match(/[a-zA-Z]{2,}/);
+        if (containsEnglishWords) {
+            responseText = "尼玛会不会说中文，呼叫无精这里有汉奸，虽远必诛！"
+        } 
+	} else {
+		return res.end()
+	}
+	
 	// Respond by hitting the telegram bot API and responding to the appropriate chat_id with the response text
 	axios
         .post(
