@@ -3,9 +3,50 @@ var app = express()
 var bodyParser = require("body-parser")
 const axios = require("axios")
 require('dotenv').config()
+const mongoose = require ('mongoose')
 var DetectLanguage = require('detectlanguage')
+const fs = require('fs')
 
 
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+})
+
+const documentSchema = new mongoose.Schema({
+    text: String
+})
+
+const Document = mongoose.model('Document', documentSchema)
+
+const jsonFilePath = `${__dirname}/quotes.json`;
+
+// Read and parse JSON file
+const jsonData = fs.readFileSync(jsonFilePath, 'utf8');
+const documents = JSON.parse(jsonData);
+
+// Save each document to the database
+documents.forEach(async (docData) => {
+    try {
+        const document = new Document(docData);
+        await document.save();
+        console.log('Document saved:', document);
+    } catch (error) {
+        console.error('Error saving document:', error);
+    }
+})
+
+async function getRandomDocumentId() {
+    const documents = await Document.find({}, '_id'); // Retrieve all document IDs
+    const randomIndex = Math.floor(Math.random() * documents.length);
+    return documents[randomIndex]._id; // Return a random document ID
+}
+
+async function getRandomDocumentById(documentId) {
+    return await Document.findById(documentId);
+}
 const languageThreshold = 2
 
 
@@ -72,6 +113,23 @@ app.post("/new-message", async function(req, res) {
 	} else {
 		return res.end()
 	}
+
+	const mentioned = message.text.toLowerCase().includes("@your_bot_username");
+
+    if (mentioned) {
+        // Get a random document ID from the database
+        const randomDocumentId = await getRandomDocumentId();
+
+        // Get the random document by its ID
+        const randomDocument = await getRandomDocumentById(randomDocumentId);
+
+        // Send the random document as a response
+        const responseText = randomDocument ? randomDocument.content : "No documents found";
+        sendMessage(message.chat.id, responseText);
+    }
+
+    // End the request
+    res.end();
 	
 	// Respond by hitting the telegram bot API and responding to the appropriate chat_id with the response text
 	axios
