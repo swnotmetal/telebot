@@ -130,26 +130,20 @@ app.post("/new-message", async function(req, res) {
 
     // End the request
     res.end();
-	
-	// Respond by hitting the telegram bot API and responding to the appropriate chat_id with the response text
-	axios
-        .post(
-        `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, // Use environment variable
-        {
-            chat_id: message.chat.id, // Use the chat ID of the incoming message
-            text: responseText,
-        }
-    )
-		.then((response) => {
-			// We get here if the message was successfully posted
-			console.log("Message posted")
-			res.end("ok")
-		})
-		.catch((err) => {
-			// ...and here if it was not
-			console.log("Error :", err)
-			res.end("Error :" + err)
-		})
+	const responseText = randomDocument ? randomDocument.content : "No documents found";
+axios.post(
+    `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
+    {
+        chat_id: message.chat.id,
+        text: responseText,
+    }
+).then((response) => {
+    console.log("Message posted");
+    res.end("ok");
+}).catch((err) => {
+    console.log("Error:", err);
+    res.end("Error:" + err);
+})
 })
 
 // Finally, start our server
