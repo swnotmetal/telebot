@@ -21,7 +21,7 @@ const documentSchema = new mongoose.Schema({
 
 const Document = mongoose.model('Document', documentSchema)
 
-const jsonFilePath = `${__dirname}/quotes.json`;
+/*const jsonFilePath = `${__dirname}/quotes.json`;
 
 // Read and parse JSON file
 const jsonData = fs.readFileSync(jsonFilePath, 'utf8');
@@ -36,7 +36,7 @@ documents.forEach(async (docData) => {
     } catch (error) {
         console.error('Error saving document:', error);
     }
-})
+}) */
 
 async function getRandomDocumentId() {
     const documents = await Document.find({}, '_id'); // Retrieve all document IDs
