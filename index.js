@@ -76,15 +76,15 @@ app.post("/new-message", async function(req, res) {
 	if (text.includes("包子")|| text.includes("包子")) {
 		responseText = "刁民！朕怎么不知道自己叫包子！来人拖出去割鸡巴!!"
 	} else if (text.includes("猪头") || text.includes("猪头")) {
-		responseText = "朕年轻落选厦门副市长的时候可帅了你们懂什么!"
+		responseText = "呜呜呜呜 就我一个候选人50%选票都不给我 等我上台你们都的死"
 	} else if (text.includes("共匪") || text.includes("共匪")) {
-		responseText = "你怎么不去舔美国的屁股沟子，你们总统都老年痴呆了"
+		responseText = "你以为当年井冈山上发生了什么？LGBTQ+大专政么"
 	} else if (text.includes("汉地") || text.includes("汉地")) {
 		responseText = "装什么少民 七五就该把你们汉民图光了"
     } else if (text.includes("小哥") || text.includes("小哥")) {
-		responseText = "小哥是个好同志 亲自颁发劳模奖章 就是再撒狗粮你大大的鸡巴也硬不起来"
+		responseText = "小哥是个好同志 亲自颁发劳模奖章 就是再撒狗粮你大大的**也硬不起来"
     } else if (text.includes("维尼") || text.includes("维尼")) {
-		responseText = "呜呜呜呜 鸡巴太小了 又是水筒形身材 还有癌症 哪里有安全感 全国韭菜一起陪葬吧"
+		responseText = "呜呜呜呜 jj太小了 又是水筒形身材 还有癌症 哪里有安全感 全国韭菜一起陪葬吧"
     } else if (text.includes("这卖") || text.includes("这卖")) {
 		responseText = "卖批！阿达西阿囊阿死给！"
 	} else if (text.includes("我蛤", "江泽民") || text.includes("我蛤", "江泽民")) {
@@ -114,7 +114,7 @@ app.post("/new-message", async function(req, res) {
 		return res.end()
 	}
 
-	const mentioned = message.text.toLowerCase().includes("@your_bot_username");
+	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME);
 
     if (mentioned) {
         // Get a random document ID from the database
