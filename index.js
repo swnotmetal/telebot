@@ -116,34 +116,30 @@ app.post("/new-message", async function(req, res) {
 
 	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME);
 
-    if (mentioned) {
-        // Get a random document ID from the database
-        const randomDocumentId = await getRandomDocumentId();
+if (mentioned) {
+    // Get a random document ID from the database
+    const randomDocumentId = await getRandomDocumentId();
 
-        // Get the random document by its ID
-        const randomDocument = await getRandomDocumentById(randomDocumentId);
+    // Get the random document by its ID
+    const randomDocument = await getRandomDocumentById(randomDocumentId);
 
-        // Send the random document as a response
-        const responseText = randomDocument ? randomDocument.content : "No documents found";
-        sendMessage(message.chat.id, responseText);
-    }
+    // Send the random document as a response
+    const responseText = randomDocument ? randomDocument.content : "No documents found";
+    axios.post(
+        `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
+        {
+            chat_id: message.chat.id,
+            text: responseText,
+        }
+    ).then((response) => {
+        console.log("Message posted");
+        res.end("ok");
+    }).catch((err) => {
+        console.log("Error:", err);
+        res.end("Error:" + err);
+    });
+}
 
-    // End the request
-    res.end();
-	const responseText = randomDocument ? randomDocument.content : "No documents found";
-axios.post(
-    `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
-    {
-        chat_id: message.chat.id,
-        text: responseText,
-    }
-).then((response) => {
-    console.log("Message posted");
-    res.end("ok");
-}).catch((err) => {
-    console.log("Error:", err);
-    res.end("Error:" + err);
-})
 })
 
 // Finally, start our server
