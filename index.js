@@ -82,7 +82,7 @@ app.post("/new-message", async function(req, res) {
     }
   }
 
-  const mentioned = message.text.toLowerCase().includes("@new_clothes_belly_bot")
+  const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
 
   if(mentioned) {
 	const randomDocumentId = await getRandomDocumentId()
