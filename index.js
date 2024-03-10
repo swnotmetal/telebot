@@ -1,7 +1,8 @@
 const app = require('./app') 
 const config = require('./utils/config')
 const axios = require('axios');
-const Message = require('./models/message.model');
+const Message = require('./models/message.model')
+const logger = require('./utils/logger')
 
 
 app.post('/new-message', async (req, res) => {
