@@ -20,7 +20,7 @@ app.post("/new-message", async function(req, res) {
 		responseText = " ∞ ∞ ∞ ∞ ∞ NAIVE!  ∞ ∞ ∞ ∞ ∞";
 	}
 
-	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
+	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME) && message.chat.type === 'group' && message.from.id !== botUserId
 	if (mentioned) {
 		try {
 			const totalDocuments = await Message.countDocuments();
@@ -43,7 +43,7 @@ app.post("/new-message", async function(req, res) {
 	// Respond by hitting the telegram bot API and responding to the appropriate chat_id with the response text
 	axios
 		.post(
-			"https://api.telegram.org/bot<your_api_token>/sendMessage", // Replace <your_api_token> with your actual API token
+			`https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, // Replace <your_api_token> with your actual API token
 			{
 				chat_id: message.chat.id,
 				text: responseText,
