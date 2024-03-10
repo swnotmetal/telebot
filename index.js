@@ -18,7 +18,7 @@ app.post('/new-message', async (req, res) => {
 	responseText = " ∞ ∞ ∞ ∞ ∞ NAIVE!  ∞  ∞ ∞ ∞ ∞ ∞";
   }
 
-  const mentioned = message.text.toLowerCase().includes(prcess.env.BOT_NAME)
+  const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
   if (mentioned) {
     try {
       const randomMessage = await Message.aggregate([{ $sample: { size: 1 } }]);
