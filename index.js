@@ -10,6 +10,9 @@ app.post('/new-message', async (req, res) => {
   if (!message || !message.text) {
     return res.end();
   }
+
+  const text = message.text.toLowerCase();
+	let responseText = '';
   if (text.includes("蛤")) {
 	responseText = " ∞ ∞ ∞ ∞ ∞ NAIVE!  ∞  ∞ ∞ ∞ ∞ ∞";
   }
