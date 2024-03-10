@@ -21,8 +21,9 @@ app.post('/new-message', async (req, res) => {
   const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
   if (mentioned) {
     try {
-      const randomMessage = await Message.aggregate([{ $sample: { size: 1 } }]);
-      const randomMessageText = randomMessage.length > 0 ? randomMessage[0].content : 'No messages found';
+		const randomId = Math.floor(Math.random() * await Message.countDocuments())
+		const randomMessage = await Message.findById(randomId)
+		const randomMessageText = randomMessage ? randomMessage.content : 'No messages found';
       await sendMessage(message.chat.id, randomMessageText);
       res.end('ok');
     } catch (error) {
@@ -30,7 +31,7 @@ app.post('/new-message', async (req, res) => {
       res.end('Error');
     }
   } else {
-    res.end(); // Don't respond if not mentioned
+    res.end(); // Don't reconst logger = require('./utils/logger')spond if not mentioned
   }
 });
 
