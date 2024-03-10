@@ -3,6 +3,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
+var bodyParser = require("body-parser")
 
 mongoose.set('strictQuery', false)
 
@@ -17,8 +18,12 @@ mongoose.connect(config.MONGODB_URI)
   })
 
 const app = express()
-
-
+app.use(bodyParser.json()) 
+app.use(
+	bodyParser.urlencoded({
+		extended: true,
+	})
+)
 app.use(cors())
 app.use(express.json())
 
