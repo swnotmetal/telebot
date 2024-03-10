@@ -59,7 +59,7 @@ app.post("/new-message", async function(req, res) {
     responseText = "Have a nice day!"
   }
 
-  const englishWordCount = message.text.split(/\s+/).filter(word => /[a-zA-Z]/.test(word)).length;
+  /*const englishWordCount = message.text.split(/\s+/).filter(word => /[a-zA-Z]/.test(word)).length;
   const englishWordPercentage = englishWordCount / message.text.split(/\s+/).length;
   let shouldDetectLanguage = englishWordPercentage > languageThreshold;
   let language = "zh";
@@ -80,7 +80,7 @@ app.post("/new-message", async function(req, res) {
     } else {
       responseText = "你好！" // Respond in Chinese if no English detected
     }
-  }
+  } */
 
   const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
 
