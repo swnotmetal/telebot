@@ -1,30 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const app = require('./app') 
+const config = require('./utils/config')
 const axios = require('axios');
-const dotenv = require('dotenv');
 const Message = require('./models/message.model');
 
-dotenv.config(); // Load environment variables
-
-const app = express();
-const port = process.env.PORT || 3000; // Use port from environment variable or default to 3000
-
-// Replace with your actual MongoDB connection string
-const mongoURI = process.env.MONGODB_URI;
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-
-app.use(express.json()); // Parse incoming JSON data
 
 app.post('/new-message', async (req, res) => {
   const { message } = req.body;
@@ -62,5 +40,7 @@ const sendMessage = async (chatId, messageText) => {
   );
 };
 
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+app.listen(config.PORT, () => {
+	logger.info(`Server running on port ${config.PORT}`)
+  })
 
