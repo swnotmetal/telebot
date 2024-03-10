@@ -20,20 +20,23 @@ app.post('/new-message', async (req, res) => {
 
   const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
   if (mentioned) {
-    try {
-		const randomId = Math.floor(Math.random() * await Message.countDocuments())
-		const randomMessage = await Message.findById(randomId)
+	try {
+	  const totalDocuments = await Message.countDocuments();
+	  if (totalDocuments === 0) {
+		await sendMessage(message.chat.id, "There are no messages yet!");
+		res.end('ok');
+	  } else {
+		const randomId = Math.floor(Math.random() * totalDocuments); // Ensure non-zero value
+		const randomMessage = await Message.findById(randomId);
 		const randomMessageText = randomMessage ? randomMessage.content : 'No messages found';
-      await sendMessage(message.chat.id, randomMessageText);
-      res.end('ok');
-    } catch (error) {
-      console.error('Error:', error);
-      res.end('Error');
-    }
-  } else {
-    res.end(); // Don't reconst logger = require('./utils/logger')spond if not mentioned
+		await sendMessage(message.chat.id, randomMessageText);
+		res.end('ok');
+	  }
+	} catch (error) {
+	  console.error('Error:', error);
+	  res.end('Error');
+	}
   }
-});
 
 const sendMessage = async (chatId, messageText) => {
   await axios.post(
