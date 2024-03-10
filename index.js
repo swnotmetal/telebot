@@ -4,7 +4,6 @@ const bodyParser = require("body-parser")
 const axios = require("axios")
 require('dotenv').config()
 const mongoose = require ('mongoose')
-const DetectLanguage = require('detectlanguage')
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
@@ -28,12 +27,6 @@ async function getRandomDocumentId() {
 async function getRandomDocumentById(documentId) {
   return await Document.findById(documentId);
 }
-
-const languageThreshold = 0.4 // Detect language if English word percentage is above 40%
-
-const detectlanguage = new DetectLanguage({
-  key: process.env.DETECT_LANGUAGE_API_KEY // Use the API key from environment variables
-})
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(
@@ -59,58 +52,39 @@ app.post("/new-message", async function(req, res) {
     responseText = "Have a nice day!"
   }
 
-  /*const englishWordCount = message.text.split(/\s+/).filter(word => /[a-zA-Z]/.test(word)).length;
-  const englishWordPercentage = englishWordCount / message.text.split(/\s+/).length;
-  let shouldDetectLanguage = englishWordPercentage > languageThreshold;
-  let language = "zh";
+  const mentioned = message.text.toLowerCase().includes("@new_clothes_belly_bot");
+
+  if (mentioned) {
+    // Get a random document ID from the database
+    const randomDocumentId = await getRandomDocumentId();
   
-  if (shouldDetectLanguage) {
-    try {
-      const languageDetectionResult = await detectlanguage.detect(message.text);
-      language = languageDetectionResult && languageDetectionResult.length > 0 ? languageDetectionResult[0].language : 'en';
-    } catch (error) {
-      console.error("Error detecting language:", error);
-    }
+    // Get the random document by its ID
+    const randomDocument = await getRandomDocumentById(randomDocumentId);
+  
+    // Send the random document as a response
+    const documentResponse = randomDocument ? randomDocument.content : "No documents found";
+    axios.post(
+      `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
+      {
+        chat_id: message.chat.id,
+        text: documentResponse, // Use the variable here
+      }
+    ).then((response) => {
+      console.log("Message posted");
+      res.end("ok");
+    }).catch((err) => {
+      console.log("Error:", err);
+      res.end("Error:" + err);
+    });
   }
 
-  if (language === "zh") {
-    const containsEnglishWords = message.text.match(/[a-zA-Z]{2,}/);
-    if (containsEnglishWords) {
-      responseText = "Would you like me to translate this message to English?"
-    } else {
-      responseText = "你好！" // Respond in Chinese if no English detected
-    }
-  } */
+  // Send the response text based on message content (language detection removed)
+  res.end(responseText);
+})
 
-  const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
+// Finally, start our server
+app.listen(3000, function() {
+  console.log("Telegram app listening on port 3000!")
+})
 
-  if(mentioned) {
-	const randomDocumentId = await getRandomDocumentId()
-
-	const randomDocument = await getRandomDocumentById(randomDocumentId)
-
-	const documentRes = randomDocument ? randomDocument.content: "Doc not found"
-	axios.post(
-		`https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
-		{
-		  chat_id: message.chat.id,
-		  text: documentRes, // Use the variable here
-		}
-	  ).then((response) => {
-		console.log("Message posted");
-		res.end("ok");
-	  }).catch((err) => {
-		console.log("Error:", err);
-		res.end("Error:" + err);
-	  });
-	}
-  
-	
-	res.end(responseText);
-  })
-  
-  // Finally, start our server
-  app.listen(3000, function() {
-	console.log("Telegram app listening on port 3000!")
-  })
-
+module.exports = app
