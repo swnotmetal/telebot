@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000; // Use port from environment variable or default to 3000
 
 // Replace with your actual MongoDB connection string
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
