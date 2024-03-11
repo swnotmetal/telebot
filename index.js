@@ -87,7 +87,7 @@ app.post("/new-message", async function(req, res) {
 			console.log("Error :", err)
 			res.end("Error :" + err)
 		})
-})
+
 
 // Function to send a message using Telegram API
 const sendMessage = async (chatId, messageText) => {
