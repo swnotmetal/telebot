@@ -49,6 +49,19 @@ app.post("/new-message", async function(req, res) {
 		}
 	}
 
+	if (!responseText) {
+		console.error('Error: Response text is empty');
+		res.end('Error: Response text is empty');
+		return; // Exit the function to avoid sending empty message to Telegram API
+	}
+
+	if (!messageText) {
+		console.error('Error: Message text is empty');
+		res.end('Error: Message text is empty');
+		return; // Exit the function to avoid sending empty message to Telegram API
+	}
+
+
 	// Respond by hitting the telegram bot API and responding to the appropriate chat_id with the response text
 	axios
 		.post(
@@ -73,7 +86,7 @@ app.post("/new-message", async function(req, res) {
 // Function to send a message using Telegram API
 const sendMessage = async (chatId, messageText) => {
 	await axios.post(
-		`https://api.telegram.org/bot<your_api_token>/sendMessage`, // Replace <your_api_token> with your actual API token
+		`https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, // Replace <your_api_token> with your actual API token
 		{
 			chat_id: chatId,
 			text: messageText,
