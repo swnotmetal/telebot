@@ -4,8 +4,8 @@ const axios = require('axios');
 const Message = require('./models/message.model');
 const logger = require('./utils/logger');
 
-// Define the route to fetch messages from the database
-app.get("/messages", async (req, res) => {
+
+/*app.get("/messages", async (req, res) => {
     try {
         const messages = await Message.find();
         res.json(messages);
@@ -13,7 +13,7 @@ app.get("/messages", async (req, res) => {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+}); */
 
 // This is the route the API will call
 app.post("/new-message", async function(req, res) {
@@ -36,8 +36,7 @@ app.post("/new-message", async function(req, res) {
     if (mentioned && message.chat.type === 'group') {
         try {
             // Fetch messages from your own endpoint /messages
-            const response = await axios.get('/messages');
-            const messages = response.data;
+            const messages = await Message.find()
 
             if (messages.length === 0) {
                 await sendMessage(message.chat.id, "There are no messages yet!");
