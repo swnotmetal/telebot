@@ -4,10 +4,19 @@ const axios = require('axios');
 const Message = require('./models/message.model');
 const logger = require('./utils/logger');
 
+
+app.get("/messages", async (req, res) => {
+    try {
+        const messages = await Message.find();
+        res.json(messages);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 //This is the route the API will call
 app.post("/new-message", async function(req, res) {
 	const { message } = req.body
-
 	// Each message contains "text" and a "chat" object, which has an "id" which is the chat id
 	if (!message || !message.text) {
 		return res.end()
@@ -20,8 +29,8 @@ app.post("/new-message", async function(req, res) {
 		responseText = " ∞ ∞ ∞ ∞ ∞ NAIVE!  ∞ ∞ ∞ ∞ ∞";
 	}
 
-	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME) && message.chat.type === 'group' && message.from.id !== botUserId
-	if (mentioned) {
+	const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME)
+	if (mentioned && message.chat.type === 'group') {
 		try {
 			const totalDocuments = await Message.countDocuments();
 			if (totalDocuments === 0) {
