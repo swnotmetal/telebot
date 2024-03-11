@@ -4,22 +4,22 @@ const axios = require('axios');
 const Message = require('./models/message.model');
 const logger = require('./utils/logger');
 
-// Define the route to fetch messages from the database
 app.get("/messages", async (req, res) => {
     try {
         const messages = await Message.find();
         res.json(messages);
+		console.log(messages)
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// This is the route the API will call
+
 app.post("/new-message", async function(req, res) {
     const { message } = req.body;
     
-    // Each message contains "text" and a "chat" object, which has an "id" which is the chat id
+    
     if (!message || !message.text) {
         return res.end();
     }
@@ -35,14 +35,13 @@ app.post("/new-message", async function(req, res) {
 
     if (mentioned && message.chat.type === 'group') {
         try {
-            // Fetch messages from your own endpoint /messages
             const response = await axios.get('/messages');
+			console.log(response)
             const messages = response.data;
 
             if (messages.length === 0) {
                 await sendMessage(message.chat.id, "There are no messages yet!");
             } else {
-                // Select a random message from the fetched messages
                 const randomIndex = Math.floor(Math.random() * messages.length);
                 const randomMessage = messages[randomIndex];
                 const randomMessageText = randomMessage ? randomMessage.content : 'No messages found';
@@ -56,11 +55,11 @@ app.post("/new-message", async function(req, res) {
     }
 });
 
-// Function to send a message using Telegram API
+
 const sendMessage = async (chatId, messageText) => {
     try {
         const response = await axios.post(
-            `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, // Replace <your_api_token> with your actual API token
+            `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, 
             {
                 chat_id: chatId,
                 text: messageText,
