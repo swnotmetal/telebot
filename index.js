@@ -35,7 +35,15 @@ app.post("/new-message", async function(req, res) {
         try {
             const randomMessage = await getRandomMessage();
             const responseMessage = randomMessage ? randomMessage.content : "There are no messages yet!";
-            await sendMessage(message.chat.id, responseMessage);
+            
+            console.log("Sending response message:", responseMessage);
+            
+            if (responseMessage.trim() !== "") {
+                await sendMessage(message.chat.id, responseMessage);
+            } else {
+                await sendMessage(message.chat.id, "No message found.");
+            }
+            
             res.end('ok');
         } catch (error) {
             console.error('Error:', error);
@@ -45,7 +53,6 @@ app.post("/new-message", async function(req, res) {
         res.end();
     }
 });
-
 const getRandomMessage = async () => {
     try {
         const count = await Message.countDocuments();
