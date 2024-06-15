@@ -8,22 +8,20 @@ app.get("/messages", async (req, res) => {
     try {
         const messages = await Message.find();
         res.json(messages);
-		console.log(messages)
+        console.log(messages);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-
 app.post("/new-message", async function(req, res) {
     const { message } = req.body;
-    
-    
+
     if (!message || !message.text) {
         return res.end();
     }
-    
+
     const text = message.text.toLowerCase();
     let responseText = '';
 
@@ -31,35 +29,40 @@ app.post("/new-message", async function(req, res) {
         responseText = " ∞ ∞ ∞ ∞ ∞ NAIVE!  ∞ ∞ ∞ ∞ ∞";
     }
 
-    const mentioned = message.text.toLowerCase().includes(process.env.BOT_NAME);
+    const mentioned = text.includes(process.env.BOT_NAME.toLowerCase());
 
     if (mentioned && message.chat.type === 'group') {
         try {
-            const response = await axios.get('/messages');
-			console.log(response)
-            const messages = response.data;
-
-            if (messages.length === 0) {
-                await sendMessage(message.chat.id, "There are no messages yet!");
-            } else {
-                const randomIndex = Math.floor(Math.random() * messages.length);
-                const randomMessage = messages[randomIndex];
-                const randomMessageText = randomMessage ? randomMessage.content : 'No messages found';
-                await sendMessage(message.chat.id, randomMessageText);
-            }
+            const randomMessage = await getRandomMessage();
+            const responseMessage = randomMessage ? randomMessage.content : "There are no messages yet!";
+            await sendMessage(message.chat.id, responseMessage);
             res.end('ok');
         } catch (error) {
             console.error('Error:', error);
             res.end('Error');
         }
+    } else {
+        res.end();
     }
 });
 
+const getRandomMessage = async () => {
+    try {
+        const count = await Message.countDocuments();
+        if (count === 0) return null;
+        const randomIndex = Math.floor(Math.random() * count);
+        const randomMessage = await Message.findOne().skip(randomIndex);
+        return randomMessage;
+    } catch (error) {
+        console.error('Error fetching random message:', error);
+        throw error;
+    }
+};
 
 const sendMessage = async (chatId, messageText) => {
     try {
         const response = await axios.post(
-            `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`, 
+            `https://api.telegram.org/bot${process.env.API_TOKEN}/sendMessage`,
             {
                 chat_id: chatId,
                 text: messageText,
